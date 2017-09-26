@@ -20,7 +20,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Rom(address, data_out);
+module Rom(address, data_out); 
+  
+// ********************************************************************
+//     Señales de entrada y salida de la memoria de instrucciones                      
+// ********************************************************************
+
 
   input  [31:0] address;
   output [31:0] data_out;
@@ -28,8 +33,8 @@ module Rom(address, data_out);
 
   parameter BASE_ADDRESS = 25'd0; // address that applies to this memory
 
-  wire [5:0] mem_offset; //
-  wire address_select; //
+  wire [5:0] mem_offset;
+  wire address_select;
 
   assign mem_offset = address[7:2];  // drop 2 LSBs to get word offset
 
@@ -38,8 +43,8 @@ module Rom(address, data_out);
   always @(address_select or mem_offset)
 
   begin
-    if ((address % 4) != 0) $display($time, " rom32 error: unaligned address %d", address); // Si la direccion no es divisible entre 4 
-    if (address_select == 1)                                                               // no es una direccion valida
+    if ((address % 4) != 0) $display($time, " rom32 error: unaligned address %d", address);
+    if (address_select == 1)
     begin
       case (mem_offset)
           5'd0  : data_out = {6'd35, 5'd0, 5'd2, 16'd4};            // lw $2, 4($0)     r2 = 1
@@ -53,6 +58,9 @@ module Rom(address, data_out);
           5'd8  : data_out = {6'd0, 5'd2, 5'd2, 5'd2, 5'd0, 6'd32}; // add $2, $2, $2   r2 = 8
           default data_out = 32'hxxxx;
       endcase
+      
+      // $display("<format>", exp1, exp2, ...); formato de escritura para mostrar: en hexadecimal la dirección y el dato de salida
+      //
 
       $display($time, " reading data: rom32[%h] => %h", address, data_out);
 
