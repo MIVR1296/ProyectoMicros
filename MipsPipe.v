@@ -156,14 +156,15 @@ input clk, reset;
     // (Note: the branch has priority over the jump, since that instruction came first)
     Mux2 #(32)	IF_PCMUX(MEM_PCSrc, IF_pc_jump, MEM_btgt, IF_pc_next);
 
-    Rom 		IMEM(IF_pc, IF_instr);
+  Rom 		IMEM(IF_pc, IF_instr); // Se accede la direccion de IF_pc en la memoria para obtener la 
+                                // instruccion que se encuentra en esa direccion
 
     always @(posedge clk)		    // IF/ID Pipeline Register
     begin
         if (reset)
         begin
-            ID_instr <= 0;
-            ID_pc4   <= 0;
+            ID_instr <= 0; // Si hay un reset ID_instr es igual a cero
+            ID_pc4   <= 0; // 
         end
         else begin
             // MODIFICATIONS HERE:
