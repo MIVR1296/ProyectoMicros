@@ -20,10 +20,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module MipsPipe(clk, reset,IF_pc4);
+module MipsPipe(clk, reset);
 
 input clk, reset;
-output [31:0] IF_pc4;
 
     // ********************************************************************
     //                              Signal Declarations
@@ -33,7 +32,7 @@ output [31:0] IF_pc4;
 
     // MODIFICATIONS HERE:
     // Add a new wires between stall and jump and the jump and branch muxes
-    wire [31:0] IF_instr, IF_pc, IF_pc_maybestalled, IF_pc_jump, IF_pc_next;//,// IF_pc4;
+    wire [31:0] IF_instr, IF_pc, IF_pc_maybestalled, IF_pc_jump, IF_pc_next,IF_pc4;
 
     // MODIFICATIONS HERE:
     // Add a new Stall signal
