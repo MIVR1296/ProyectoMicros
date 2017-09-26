@@ -59,8 +59,9 @@ module Rom(address, data_out);
           default data_out = 32'hxxxx;
       endcase
       
-      // $display("<format>", exp1, exp2, ...); formato de escritura para mostrar: en hexadecimal la dirección y el dato de salida
-      //
+      // $display("<format>", exp1, exp2, ...); 
+      //El primer grupo de tareas de visualización es muy similar a imprimir la función en el lenguaje ANSI C (la sintaxis es casi la misma). 
+      //La tareas $ display añade un nuevo carácter de línea al final de la salida.
 
       $display($time, " reading data: rom32[%h] => %h", address, data_out);
 
