@@ -9,7 +9,7 @@
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
-// Description: 
+// Description: Alu de control basada en la tabla de control del libro Computer Organization and Design 3 edicion
 // 
 // Dependencies: 
 // 
@@ -21,9 +21,9 @@
 
 
 module OpControl(opcode, RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite, Branch, ALUOp, Jump);
-    input [5:0] opcode;
+    input [5:0] opcode; // Op code de la instruccion
     output RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump;
-    output [1:0] ALUOp;
+    output [1:0] ALUOp; // Señales de control
     reg    RegDst, ALUSrc, MemtoReg, RegWrite, MemRead, MemWrite, Branch, Jump;
     reg    [1:0] ALUOp;
 
