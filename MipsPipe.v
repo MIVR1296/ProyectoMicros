@@ -38,7 +38,10 @@ input clk, reset;
  //                              Declaración de las señales
  // ********************************************************************
 
-    // IF Signal Declarations
+  
+ // ********************************************************************
+ //                            Declaración de señales del Fetch (IF)
+ // ********************************************************************
 
     // MODIFICATIONS HERE:
     // Add a new wires between stall and jump and the jump and branch muxes
@@ -48,7 +51,10 @@ input clk, reset;
     // Add a new Stall signal
     reg Stall;
 
-    // ID Signal Declarations
+ // ********************************************************************
+  //                            Declaración de señales del Decode (ID)
+ // ********************************************************************
+
 
     reg [31:0] ID_instr, ID_pc4;  // pipeline register values from EX
 
@@ -74,7 +80,10 @@ input clk, reset;
          ID_MemRead, ID_MemWrite, ID_ALUSrc, ID_Jump;
     wire [1:0] ID_ALUOp;
 
-    // EX Signals
+ // ********************************************************************
+ //                            Declaración de señales del Execute (EX)
+ // ********************************************************************
+
 
     // MODIFICATIONS HERE:
     // Add EX_rs
@@ -96,7 +105,10 @@ input clk, reset;
     // Add registers for forwarding control
     reg  [1:0] ForwardA, ForwardB;
 
-   // MEM Signals
+  // ********************************************************************
+  //                            Declaración de señales del MEM 
+  // ********************************************************************
+
 
     wire MEM_PCSrc;
 
@@ -107,16 +119,22 @@ input clk, reset;
     wire [31:0] MEM_memout;
     reg  [5:0] MEM_RegRd;
 
-    // WB Signals
+  // ********************************************************************
+  //                            Declaración de señales del Writeback (WB)
+  // ********************************************************************
+
 
     reg WB_RegWrite, WB_MemtoReg;  // WB Control Signals
 
     reg  [31:0] WB_memout, WB_ALUOut;
     wire [31:0] WB_wd;
     reg  [4:0] WB_RegRd;
+  
+   //  A continuación se muestran las 5 Estapas del pipeline con las unidades de detección de riesgos y adelantamiento:
+
 
     // ********************************************************************
-    //                              IF Stage
+    //                              Etapa 1: Fetch
     // ********************************************************************
 
     // IF Hardware
@@ -162,7 +180,7 @@ input clk, reset;
     end
 
     // ********************************************************************
-    //                              ID Stage
+    //                              Estapa 2: Decode
     // ********************************************************************
 
     Registro	RFILE(clk, WB_RegWrite, ID_rs, ID_rt, WB_RegRd, ID_rd1, ID_rd2, WB_wd);
@@ -247,7 +265,7 @@ input clk, reset;
     end
 
     // ********************************************************************
-    //                              EX Stage
+  //                              Estapa 3: Ejecución (Exe)
     // ********************************************************************
 
     // branch offset shifter
@@ -352,7 +370,7 @@ input clk, reset;
     end
 
     // ********************************************************************
-    //                              MEM Stage
+  //                              Etapa 4: Memory (MEM)
     // ********************************************************************
 
     Memoria MEM_DMEM(clk, MEM_MemRead, MEM_MemWrite, MEM_ALUOut, MEM_rd2, MEM_memout);
@@ -379,7 +397,7 @@ input clk, reset;
     end
 
     // ********************************************************************
-    //                              WB Stage
+    //                              Etapa 5: Writeback
     // ********************************************************************
 
     Mux2 #(32)	WB_WRMUX(WB_MemtoReg, WB_ALUOut, WB_memout, WB_wd);
