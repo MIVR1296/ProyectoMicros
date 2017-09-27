@@ -36,6 +36,14 @@ input clk, reset;
  //                              Variables de salida
  // ********************************************************************
 
+  //output [31:0] IF_pc addres en teoria
+  //output [31:0] ID_rd1, ID_rd2 registros de datos
+  //output [31:0] EX_ALUOut salida de la Alu
+  //output [5:0] EX_funct funcion a realizar
+  //output [2:0] EX_Operation tipo de instruccion
+  //output [31:0] WB_wd registro de salida
+ 
+  
  // ********************************************************************
  //                              Declaración de las señales
  // ********************************************************************
@@ -191,7 +199,7 @@ input clk, reset;
     end
 
     // ********************************************************************
-    //                              Estapa 2: Decode
+    //                              Etapa 2: Decode
     // ********************************************************************
 
     Registro	RFILE(clk, WB_RegWrite, ID_rs, ID_rt, WB_RegRd, ID_rd1, ID_rd2, WB_wd);
