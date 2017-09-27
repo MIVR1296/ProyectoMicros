@@ -51,7 +51,7 @@ input clk, reset;
 
     // MODIFICATIONS HERE:
     // Add a new Stall signal
-    reg Stall;
+    reg Stall; 
 
  // ********************************************************************
   //                            Declaración de señales del Decode (ID)
@@ -66,19 +66,22 @@ input clk, reset;
     wire [31:0] ID_extend, ID_rd1, ID_rd2;
     wire [31:0] ID_jaddr;
 
-    assign ID_op = ID_instr[31:26];
-    assign ID_rs = ID_instr[25:21];
-    assign ID_rt = ID_instr[20:16];
-    assign ID_rd = ID_instr[15:11];
-    assign ID_immed = ID_instr[15:0];
+  assign ID_op = ID_instr[31:26]; // 6 bits del código de operación
+  assign ID_rs = ID_instr[25:21]; // 5 bits del registro rs
+  assign ID_rt = ID_instr[20:16]; // 5 bits del registro rt
+  assign ID_rd = ID_instr[15:11]; // // 5 bits del registro rd
+  assign ID_immed = ID_instr[15:0];
 
     // MODIFICATIONS HERE:
     // Intermediate control signals between the control unit and the stall
     // muxes. We only need to zero writes and branch/jumps, as well as memread
     // which could inadvertently trigger later stalls if its not zeroed.
+  
+  // Las siguientes señales se encuentran entre la unidad de control y los muxes de atascamiento (stall)
+  
     wire ID_RegWrite_v, ID_MemWrite_v, ID_MemRead_v, ID_Branch_v, ID_Jump_v;
 
-    wire ID_RegWrite, ID_Branch, ID_RegDst, ID_MemtoReg,  // ID Control signals
+    wire ID_RegWrite, ID_Branch, ID_RegDst, ID_MemtoReg,  // Señales de control del decode
          ID_MemRead, ID_MemWrite, ID_ALUSrc, ID_Jump;
     wire [1:0] ID_ALUOp;
 
@@ -103,8 +106,8 @@ input clk, reset;
     reg  [1:0] EX_ALUOp;
     wire [2:0] EX_Operation;
 
-    // MODIFICATIONS HERE:
-    // Add registers for forwarding control
+    
+    //Para la unidad de adelantamiento
     reg  [1:0] ForwardA, ForwardB;
 
   // ********************************************************************
@@ -126,7 +129,7 @@ input clk, reset;
   // ********************************************************************
 
 
-    reg WB_RegWrite, WB_MemtoReg;  // WB Control Signals
+    reg WB_RegWrite, WB_MemtoReg;  // Señales de control del Writeback
 
     reg  [31:0] WB_memout, WB_ALUOut;
     wire [31:0] WB_wd;
@@ -145,12 +148,12 @@ input clk, reset;
 
     Adder32   IF_PCADD(IF_pc, 32'd4, IF_pc4);
 
-    // MODIFICATIONS HERE:
-    // When stalling don't increment the PC
+    
+    // Cuando el atascamiento (Stall ocurre) se deja de incrementar el PC
     Mux2 #(32)  IF_SMUX(Stall, IF_pc4, IF_pc, IF_pc_maybestalled);
 
-    // MODIFICATIONS HERE:
-    // Use the jump target from the ID stage if that was a jump
+    
+   // Se usa (jump target) para identificar desde la etapa de  ID, si había un salto 
     Mux2 #(32)  IF_JMPMUX(ID_Jump, IF_pc_maybestalled, ID_jaddr, IF_pc_jump);
 
     // MODIFICATIONS HERE:
