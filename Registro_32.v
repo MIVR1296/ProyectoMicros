@@ -16,7 +16,7 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments: Este corresponde al registro que se muestra con el nombre de PC, en los diagramas que se describen en el Patterson
-// era edición. En los capítulos 5 y 6
+// era edición. En los capítulos 5 y 6 (pág 293 fig 5.5)
 //////////////////////////////////////////////////////////////////////////////////
 
 
