@@ -15,7 +15,7 @@
 // 
 // Revision:
 // Revision 0.01 - File Created
-// Additional Comments:
+// Additional Comments: Corresponde a la memoria de intrucciones que se describe en el Paterson. En las págs 292 293.
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -29,24 +29,24 @@ module ROM(address, data_out);
 // ********************************************************************
 
 
-  input  [31:0] address;
-  output [31:0] data_out;
+  input  [31:0] address; // Corresponde a la dirección que ingresa del PC para buscar la instrucción
+  output [31:0] data_out; // Sale la instrucción
   reg    [31:0] data_out;
 
-  parameter BASE_ADDRESS = 25'd0; // address that applies to this memory
-
-  wire [5:0] mem_offset;
+  parameter BASE_ADDRESS = 25'd0;
+  wire [5:0] mem_offset; // se utiliza para los case
   wire address_select;
 
-  assign mem_offset = address[7:2];  // drop 2 LSBs to get word offset
+  assign mem_offset = address[7:2];  // Se toman los  LSB para utilizarlos en el case
 
   assign address_select = (address[31:8] == BASE_ADDRESS);  // address decoding
 
   always @(address_select or mem_offset)
 
   begin
+    // en caso de que la dirección no sea múltiplo de 4
     if ((address % 4) != 0) $display($time, " rom32 error: unaligned address %d", address);
-    if (address_select == 1)
+    if (address_select == 1) 
     begin
       case (mem_offset)
           5'd0  : data_out = {6'd35, 5'd0, 5'd2, 16'd4};            // lw $2, 4($0)     r2 = 1
