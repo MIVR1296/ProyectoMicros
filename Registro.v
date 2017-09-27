@@ -15,7 +15,8 @@
 // 
 // Revision:
 // Revision 0.01 - File Created
-// Additional Comments:
+// Additional Comments: Este corresponde al banco de registros que se describe en el capítulo 5 y 6 del Patterson, 3era edición. 
+// Es como el que se muestra en la figura 5.9 de la página 297 
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
