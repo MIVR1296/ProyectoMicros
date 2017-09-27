@@ -16,8 +16,8 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments: Este modulo se encarga de implementar el control de la Alu, segun el codigo de la instruccion
-//                      la funcion y para definir 
-// 
+// la funcion y para definir. La lógica y las diferentes tablas en las que está basadp, se pueden entontrar en el Patterson
+// 3era edición. En las pág 301-302
 //////////////////////////////////////////////////////////////////////////////////
 
 
