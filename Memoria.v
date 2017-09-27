@@ -19,7 +19,9 @@
 // Se usa como base el procesador que se describe en los capítulos 5 y 6 del Patterson, 3ra edición (pág 296)
 //////////////////////////////////////////////////////////////////////////////////
 
-
+//***********************************************
+// Memoria de datos
+//***********************************************
 module Memoria (clk, mem_read, mem_write, address, data_in, data_out);
 
   input  clk, mem_read, mem_write; // Mem_read y Mem_write son las señales de control de lectura y escritura
