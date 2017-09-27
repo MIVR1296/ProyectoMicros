@@ -16,6 +16,8 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
+// Se implementa el pipeline del Patterson, 3ra edición. De la sección 6.3 
+// Se diseña el pipeline de la figura 6.27, página 404
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
