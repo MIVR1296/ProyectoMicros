@@ -163,8 +163,13 @@ input clk, reset;
 
   Rom 		IMEM(IF_pc, IF_instr); // Se accede la direccion de IF_pc en la memoria para obtener la 
                                 // instruccion que se encuentra en esa direccion
+  
+  
+    // ********************************************************************
+    //                             Registro: IF/ID
+    // ********************************************************************
 
-    always @(posedge clk)		    // IF/ID Pipeline Register
+    always @(posedge clk)		    
     begin
         if (reset)
         begin
@@ -224,8 +229,13 @@ input clk, reset;
     Mux2 #(1)   ID_MW_SMUX(Stall, ID_MemWrite_v, 1'b0, ID_MemWrite);
     Mux2 #(1)   ID_BR_SMUX(Stall, ID_Branch_v,   1'b0, ID_Branch);
     Mux2 #(1)   ID_JU_SMUX(Stall, ID_Jump_v,     1'b0, ID_Jump);
+  
+    
+    // ********************************************************************
+    //                              Registro: ID/EX
+    // ********************************************************************
 
-    always @(posedge clk)		    // ID/EX Pipeline Register
+    always @(posedge clk)		    
     begin
         if (reset)
         begin
@@ -344,7 +354,10 @@ input clk, reset;
     end
 
 
-    always @(posedge clk)		    // EX/MEM Pipeline Register
+    // ********************************************************************
+    //                              Registro: EX/MEM
+    // ********************************************************************
+    always @(posedge clk)		   
     begin
         if (reset)
         begin
@@ -382,8 +395,13 @@ input clk, reset;
     Memoria MEM_DMEM(clk, MEM_MemRead, MEM_MemWrite, MEM_ALUOut, MEM_rd2, MEM_memout);
 
     and  		MEM_BR_AND(MEM_PCSrc, MEM_Branch, MEM_Zero);
+    
+    
+    // ********************************************************************
+    //                              Registro: MEM/WB
+    // ********************************************************************
 
-    always @(posedge clk)		// MEM/WB Pipeline Register
+    always @(posedge clk)		
     begin
         if (reset)
         begin
