@@ -52,12 +52,10 @@ input clk, reset;
  //                            Declaración de señales del Fetch (IF)
  // ********************************************************************
 
-    // MODIFICATIONS HERE:
-    // Add a new wires between stall and jump and the jump and branch muxes
+    // Direcciones
     wire [31:0] IF_instr, IF_pc, IF_pc_maybestalled, IF_pc_jump, IF_pc_next, IF_pc4;
 
-    // MODIFICATIONS HERE:
-    // Add a new Stall signal
+    // Se agrega la senal de atascamiento
     reg Stall;
 
  // ********************************************************************
@@ -79,10 +77,7 @@ input clk, reset;
     assign ID_rd = ID_instr[15:11]; // 5 bits del registro rd
     assign ID_immed = ID_instr[15:0]; // 16 bits para un inmediato
 
-    // MODIFICATIONS HERE:
-    // Intermediate control signals between the control unit and the stall
-    // muxes. We only need to zero writes and branch/jumps, as well as memread
-    // which could inadvertently trigger later stalls if its not zeroed.
+    
     
      // Las siguientes señales se encuentran entre la unidad de control y los muxes de atascamiento (stall)
     wire ID_RegWrite_v, ID_MemWrite_v, ID_MemRead_v, ID_Branch_v, ID_Jump_v;
@@ -95,8 +90,6 @@ input clk, reset;
  //                            Declaración de señales del Execute (EX)
  // ********************************************************************
 
-    // MODIFICATIONS HERE:
-    // Add EX_rs
     reg  [31:0] EX_pc4, EX_extend, EX_rd1, EX_rd2;
     wire [31:0]  EX_offset, EX_btgt, EX_alub, EX_ALUOut;
     reg  [4:0]  EX_rs, EX_rt, EX_rd;
@@ -142,23 +135,23 @@ input clk, reset;
  // ********************************************************************
     // IF Hardware
 
+    // Registro que contiene la direccion de PC
     Registro_32		IF_PC(clk, reset, IF_pc_next, IF_pc);
 
+    // Realiza la suma de PC+4
     Adder_32		IF_PCADD(IF_pc, 32'd4, IF_pc4);
 
-    // Cuando ocurre un stall se deja de incrementar el PC
+    // Cuando ocurre un atascamiento se deja de incrementar el PC
     Mux_2x1 #(32)  IF_SMUX(Stall, IF_pc4, IF_pc, IF_pc_maybestalled);
 
-   // Se usa (jump target) para identificar desde la etapa de  ID, si había un salto 
+    // Se identifica desde la etapa de  ID si había un jump
     Mux_2x1 #(32)  IF_JMPMUX(ID_Jump, IF_pc_maybestalled, ID_jaddr, IF_pc_jump);
 
-    // MODIFICATIONS HERE:
-    // Use the branch target from the MEM stage if that was a branch
-    // (Note: the branch has priority over the jump, since that instruction came first)
+    // Se identifica si habia un Branch, en la etapa de MEM tiene prioridad sobre el jump
     Mux_2x1 #(32)	IF_PCMUX(MEM_PCSrc, IF_pc_jump, MEM_btgt, IF_pc_next);
 
     ROM		IMEM(IF_pc, IF_instr); // Se accede la direccion de IF_pc en la memoria para obtener la 
-    // instruccion que se encuentra en esa direccion
+                                // instruccion que se encuentra en esa direccion
 
  // ********************************************************************
  //                             Registro: IF/ID
@@ -171,16 +164,15 @@ input clk, reset;
             ID_pc4   <= 0;
         end
         else begin
-            // MODIFICATIONS HERE:
-            // Flush the loaded instruction on a jump
+             // Si hay un jump pone en cero la instruccion
             if (ID_Jump)
                 ID_instr <= 0;
 
             else if (Stall)
                 ID_instr <= ID_instr;
             else
-                ID_instr <= IF_instr;
-            ID_pc4   <= IF_pc4;
+                ID_instr <= IF_instr; // Toma el valor obtenido del fetch
+            ID_pc4   <= IF_pc4;      // Toma el valor del fetch
         end
     end
 
@@ -194,20 +186,17 @@ input clk, reset;
     // Para la extensión de signo
     assign ID_extend = { {16{ID_immed[15]}}, ID_immed };
 
-    // MODIFICATIONS HERE:
-    // Calculate the jump address from the incremented PC and the jump offset
+    // Calcula la direccion de salto 
     assign ID_jaddr = {ID_pc4[31:28], ID_instr[25:0], 2'b00};
 
-
-    // MODIFICATIONS HERE:
-    // Implement the hazard detection unit
+   // Implementacion de la unidad de detencion de riesgos
     always @(*)
     begin
         if (EX_MemRead
-            && ((EX_rt == ID_rs) || (EX_rt == ID_rt)))
+          && ((EX_rt == ID_rs) || (EX_rt == ID_rt))) // Condicion para que se de un atascamiento
             Stall = 1'b1;
         else
-            Stall = 1'b0;
+            Stall = 1'b0;  // Si lo anterior no ocurre no hay atascamiento
     end
 
 
@@ -233,8 +222,7 @@ input clk, reset;
     begin
         if (reset)
         begin
-            // MODIFICATIONS HERE:
-            // Remove redundant assignments, assign EX_rs
+            
             EX_RegDst   <= 0;
             EX_ALUOp    <= 0;
             EX_ALUSrc   <= 0;
@@ -253,8 +241,7 @@ input clk, reset;
             EX_rd       <= 0;
         end
         else begin
-            // MODIFICATIONS HERE:
-            // Remove redundant assignments, assign EX_rs
+            
             EX_RegDst   <= ID_RegDst;
             EX_ALUOp    <= ID_ALUOp;
             EX_ALUSrc   <= ID_ALUSrc;
@@ -278,7 +265,6 @@ input clk, reset;
   //                              Estapa 3: Ejecución (Exe)
   // ********************************************************************
 
-    // branch offset shifter
     assign EX_offset = EX_extend << 2;
 
     assign EX_funct = EX_extend[5:0];
@@ -287,21 +273,13 @@ input clk, reset;
 
     wire [31:0] MuxA_out, MuxB_out;
 
-    // MODIFICATIONS HERE:
-    // Muxes to select forwarded values
-    // If ForwardX:
-    //     00 -> value from ID/EX
-    //     10 -> value from EX/MEM
-    //     01 -> value from MEM/WB
+
     Mux_3x1 #(32)  FMUXA(ForwardA, EX_rd1, WB_wd, MEM_ALUOut, MuxA_out);
     Mux_3x1 #(32)  FMUXB(ForwardB, EX_rd2, WB_wd, MEM_ALUOut, MuxB_out);
 
-    // MODIFICATIONS HERE:
-    // Take the output from FMUXB instead of directly from ID/EX
+  
     Mux_2x1 #(32) 	ALUMUX(EX_ALUSrc, MuxB_out, EX_extend, EX_alub);
 
-    // MODIFICATIONS HERE:
-    // Take the output from FMUXA instead of directly from ID/EX
     Alu 	EX_ALU(EX_Operation, MuxA_out, EX_alub, EX_ALUOut, EX_Zero);
 
     Mux_2x1 #(5) 	EX_RFMUX(EX_RegDst, EX_rt, EX_rd, EX_RegRd);
