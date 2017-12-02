@@ -1,0 +1,80 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 09/26/2017 01:35:34 AM
+// Design Name: 
+// Module Name: Rom
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+////
+
+
+module ROM(address, data_out); 
+  
+// ********************************************************************
+//     SeÃ±ales de entrada y salida de la memoria de instrucciones                      
+// ********************************************************************
+
+
+  input  [31:0] address;
+  output [31:0] data_out;
+  reg    [31:0] data_out;
+
+  parameter BASE_ADDRESS = 25'd0; // address that applies to this memory
+
+  wire [6:0] mem_offset;
+  wire address_select;
+
+  assign mem_offset = address[8:2];  // drop 2 LSBs to get word offset
+
+  assign address_select = (address[31:8] == BASE_ADDRESS);  // address decoding
+
+  always @(address_select or mem_offset)
+
+  begin
+    if ((address % 4) != 0) $display($time, " rom32 error: unaligned address %d", address);
+    if (address_select == 1)
+    begin
+      case (mem_offset)
+          6'h0  : data_out = {6'd35, 5'd0, 5'd2, 16'd4};            // lw $2, 4($0)     r2 = 1
+          6'h1  : data_out = {6'd0, 5'd2, 5'd2, 5'd2, 5'd0, 6'd32}; // add $2, $2, $2   r2 = 2
+          6'h2  : data_out = {6'd2, 26'd7};                         // jump to instruction 6
+          6'h3  : data_out = {6'd0, 5'd2, 5'd2, 5'd2, 5'd0, 6'd32}; // add $2, $2, $2   r2 = 4 (se debe saltar)
+          6'h4  : data_out = 0;       
+          6'h5  : data_out = 0; 
+          6'h6  : data_out = 0;                               // These are here just so our j
+          6'h7  : data_out = {6'd0, 5'd2, 5'd2, 5'd2, 5'd0, 6'd32}; // add $2, $2, $2   r2 = 4
+          6'h8  : data_out = {6'd0, 5'd2, 5'd2, 5'd2, 5'd0, 6'd32}; // add $2, $2, $2   r2 = 8
+          6'h9  : data_out = {6'd35, 5'd1, 5'd1, 16'd4};            // lw $1, 4($0)     r1= 1
+          6'ha  : data_out = {6'd0, 5'd2, 5'd1, 5'd2, 5'd0, 6'd34}; // sub $2, $2, $1  r2=7
+          6'hb  : data_out = {6'd0, 5'd2, 5'd2, 5'd2, 5'd0, 6'd32}; // add $2, $2, $2   r2 = 2
+          6'hc  : data_out = {6'd0, 5'd2, 5'd2, 5'd2, 5'd0, 6'd32}; // add $2, $2, $2   r2 = 2
+          6'hd  : data_out = {6'd0, 5'd2, 5'd1, 5'd2, 5'd0, 6'd34}; // sub $2, $2, $1  r2=7
+          6'he  : data_out = {6'd35, 5'd0, 5'd2, 16'd4};            // lw $1, 4($0)     r1= 1
+        
+  
+          default data_out = 32'h0000;
+      endcase
+      
+      // $display("<format>", exp1, exp2, ...); 
+      //El primer grupo de tareas de visualizaciÃ³n es muy similar a imprimir la funciÃ³n en el lenguaje ANSI C (la sintaxis es casi la misma). 
+      //La tareas $ display aÃ±ade un nuevo carÃ¡cter de lÃ­nea al final de la salida.
+
+      $display($time, " reading data: rom32[%h] => %h", address, data_out);
+
+    end
+  end
+endmodule
